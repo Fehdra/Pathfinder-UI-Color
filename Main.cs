@@ -131,7 +131,7 @@ namespace DarkParchmentUI
         static Harmony _harmony;
         static bool _applyRequested;
         static bool _forceRedrawThisPass;
-
+        static bool _logApplyThisPass;
         // recursion guard for TMP patch
         static bool IsInternalChanging;
 
@@ -332,11 +332,13 @@ namespace DarkParchmentUI
                 {
                     _applyRequested = false;
                     _forceRedrawThisPass = Settings.forceTMPRefresh;
+                    _logApplyThisPass = Settings.debugLogOnApply;
 
                     DiscoverCanvases(force: true);
                     ApplyAllCached(includeText: true);
 
                     _forceRedrawThisPass = false;
+                    _logApplyThisPass = false;
                     return;
                 }
 
@@ -354,6 +356,7 @@ namespace DarkParchmentUI
                 if (Settings == null || IsInternalChanging) return;
                 if (__instance == null || !__instance.isActiveAndEnabled) return;
                 if (ShouldNeverTouch(__instance.gameObject)) return;
+                if (!Settings.enableTextBoost && !Settings.enableTextTint) return;
 
                 var canvas = __instance.canvas;
                 if (canvas != null && canvas.renderMode == RenderMode.WorldSpace && !IsSafeWorldspaceCanvas(canvas))
@@ -507,7 +510,7 @@ namespace DarkParchmentUI
             {
                 var cache = kv.Value;
 
-                if (Settings.enableBackground || Settings.enablePopupBackground)
+                if (Settings.enableBackground || Settings.enablePopupBackground || Settings.debugLogOnApply)
                 {
                     // ========== Images ==========
                     for (int i = 0; i < cache.bgImages.Count; i++)
@@ -518,6 +521,10 @@ namespace DarkParchmentUI
                         bool isPopup = IsPopupLike(img.gameObject);
                         bool isChat = IsChatLike(img.gameObject);
                         bool treatAsPopup = isPopup || isChat;
+
+                        if (_logApplyThisPass && Settings.debugLogOnApply)
+                            DebugLogBg(Mod.Logger, "ImageBG", img.gameObject, isPopup, isChat);
+
 
                         if (treatAsPopup && !Settings.enablePopupBackground) continue;
                         if (!treatAsPopup && !Settings.enableBackground) continue;
@@ -530,9 +537,6 @@ namespace DarkParchmentUI
 
                         Color baseColor = Desaturate(orig, 0.25f);
                         Color target = new Color(targetBg.r, targetBg.g, targetBg.b, baseColor.a);
-
-                        if (_forceRedrawThisPass && Settings.debugLogOnApply)
-                            DebugLogBg(Mod.Logger, "ImageBG", img.gameObject, isPopup, isChat);
 
                         img.color = Color.Lerp(baseColor, target, t);
                     }
@@ -547,6 +551,10 @@ namespace DarkParchmentUI
                         bool isChat = IsChatLike(raw.gameObject);
                         bool treatAsPopup = isPopup || isChat;
 
+                        if (_logApplyThisPass && Settings.debugLogOnApply)
+                            DebugLogBg(Mod.Logger, "RawBG", raw.gameObject, isPopup, isChat);
+
+
                         if (treatAsPopup && !Settings.enablePopupBackground) continue;
                         if (!treatAsPopup && !Settings.enableBackground) continue;
 
@@ -558,9 +566,6 @@ namespace DarkParchmentUI
 
                         Color baseColor = Desaturate(orig, 0.25f);
                         Color target = new Color(targetBg.r, targetBg.g, targetBg.b, baseColor.a);
-
-                        if (_forceRedrawThisPass && Settings.debugLogOnApply)
-                            DebugLogBg(Mod.Logger, "RawBG", raw.gameObject, isPopup, isChat);
 
                         raw.color = Color.Lerp(baseColor, target, t);
                     }
