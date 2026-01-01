@@ -6,13 +6,13 @@ um 1000% if you can redo this or fix let me know >
 
 
 you can change text color and window color 
-and your can chnage the translucency.
+and your can change the translucency.
 
 
 
 
 100% has visual issues but it dont Burn your eyes out lol
-like hard to read some text, working on finding what collors are what. 
+like hard to read some text, working on finding what colors are what. 
 
 
 
