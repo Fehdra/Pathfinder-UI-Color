@@ -1,6 +1,3 @@
-﻿// DarkParchmentUI/UIThemeController.cs
-// C# 7.3 compatible
-
 using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -10,17 +7,18 @@ namespace DarkParchmentUI
     internal static class UIThemeController
     {
         private static bool _enabled;
+        private static int _seq;
 
         public static void Enable()
         {
             if (_enabled) return;
             _enabled = true;
 
-            Runner.Ensure();
             SceneManager.sceneLoaded += OnSceneLoaded;
 
-            // Initial burst (enable mid-session or first load)
-            Runner.Instance.Run(DelayedApply());
+            // Initial pass for current scene
+            QueueFullApply(0.35f);
+            QueueFullApply(1.00f);
         }
 
         public static void Disable()
@@ -29,40 +27,38 @@ namespace DarkParchmentUI
             _enabled = false;
 
             SceneManager.sceneLoaded -= OnSceneLoaded;
-
-            ThemeApplier.RestoreAll();
-            ThemeApplier.ClearAllTracking();
-
-            Runner.DestroyRunner();
         }
 
         private static void OnSceneLoaded(Scene scene, LoadSceneMode mode)
         {
-            if (!_enabled) return;
-
-            // UI often rebuilds after scene load
-            Runner.Instance.Run(DelayedApply());
+            // Two passes: early + late (late catches UI that spawns after load)
+            QueueFullApply(0.35f);
+            QueueFullApply(1.00f);
         }
 
-        private static IEnumerator DelayedApply()
+        private static void QueueFullApply(float delay)
         {
-            // Try a few times to catch UI that builds late (main menu, HUD, etc.)
-            for (int attempt = 0; attempt < 8; attempt++)
-            {
-                yield return new WaitForSeconds(0.25f);
-                if (!_enabled) yield break;
+            Runner.Ensure();
+            _seq++;
+            int seq = _seq;
 
-                try
-                {
-                    ThemeApplier.ApplyToAllCanvases();
+            Runner.Instance.Run(DelayThen(delay, () =>
+            {
+                if (!_enabled) return;
+                if (seq != _seq) return;
+
+                ThemeApplier.ReapplyAll();
+                ThemeApplier.ApplyHudVisibilityNow();
+
+                if (Main.Settings != null && Main.Settings.EnableTextTint)
                     ThemeApplier.ApplyTextToAll();
-                }
-                catch (System.Exception e)
-                {
-                    Main.Logger.Error(e);
-                    yield break;
-                }
-            }
+            }));
+        }
+
+        private static IEnumerator DelayThen(float delay, System.Action a)
+        {
+            yield return new WaitForSeconds(delay);
+            a?.Invoke();
         }
     }
 }

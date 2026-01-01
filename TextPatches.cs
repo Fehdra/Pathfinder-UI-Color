@@ -1,5 +1,5 @@
-﻿// DarkParchmentUI/TextPatches.cs
-// C# 7.3 compatible
+// DarkParchmentUI/TextPatches.cs
+
 
 using HarmonyLib;
 using TMPro;
@@ -31,7 +31,9 @@ namespace DarkParchmentUI
             }
 
             var a = value.a;
+            ThemeApplier.SetCurrentTextTransform(__instance.transform);
             value = ThemeApplier.TintTextIncoming(value);
+            ThemeApplier.ClearCurrentTextTransform();
             value.a = a; // preserve alpha
         }
     }

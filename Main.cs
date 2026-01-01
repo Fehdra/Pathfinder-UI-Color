@@ -1,5 +1,5 @@
-﻿// DarkParchmentUI/Main.cs
-// C# 7.3 compatible
+// DarkParchmentUI/Main.cs
+
 
 using HarmonyLib;
 using System.Reflection;
@@ -7,9 +7,6 @@ using UnityModManagerNet;
 
 namespace DarkParchmentUI
 {
-#if DEBUG
-    [EnableReloading]
-#endif
     public static class Main
     {
         internal static UnityModManager.ModEntry ModEntry { get; private set; }
@@ -39,6 +36,7 @@ namespace DarkParchmentUI
             return true;
         }
 
+
         private static bool OnToggle(UnityModManager.ModEntry modEntry, bool value)
         {
             if (value)
@@ -51,7 +49,7 @@ namespace DarkParchmentUI
                 // Stop coroutines, restore visuals, clear caches
                 UIThemeController.Disable();
 
-                // IMPORTANT: prevent stacked patches when using Reload (debug)
+                // Prevent stacked patches if the mod is toggled repeatedly
                 if (_harmony != null)
                 {
                     _harmony.UnpatchAll(modEntry.Info.Id);

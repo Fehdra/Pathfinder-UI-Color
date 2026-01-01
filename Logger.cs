@@ -1,14 +1,12 @@
-﻿// DarkParchmentUI/Logger.cs
-// C# 7.3 compatible
+// DarkParchmentUI/Logger.cs
+
 
 using System;
-using System.Diagnostics;
-using System.Reflection;
 using UnityModManagerNet;
 
 namespace DarkParchmentUI
 {
-    internal class Logger
+    internal sealed class Logger
     {
         private readonly UnityModManager.ModEntry.ModLogger _logger;
 
@@ -20,15 +18,10 @@ namespace DarkParchmentUI
 
         public void Error(Exception e)
         {
+            if (e == null) return;
             _logger.Error($"{e.Message}\n{e.StackTrace}");
             if (e.InnerException != null) Error(e.InnerException);
         }
-
-        [Conditional("DEBUG")]
-        public void Debug(string s) => _logger.Log(s);
-
-        [Conditional("DEBUG")]
-        public void Debug(MethodBase m, params object[] args)
-            => _logger.Log($"{m.DeclaringType?.Name}.{m.Name}({string.Join(", ", args)})");
+        // Intentionally no Debug logging in this build (keeps overhead minimal).
     }
 }

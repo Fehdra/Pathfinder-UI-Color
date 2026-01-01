@@ -1,5 +1,5 @@
-﻿// DarkParchmentUI/Runner.cs
-// C# 7.3 compatible
+// DarkParchmentUI/Runner.cs
+
 
 using System.Collections;
 using UnityEngine;
@@ -31,7 +31,9 @@ namespace DarkParchmentUI
         internal void Run(IEnumerator routine)
         {
             if (routine == null) return;
+            if (!this) return;
             StartCoroutine(routine);
         }
+
     }
 }
