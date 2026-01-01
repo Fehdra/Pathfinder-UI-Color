@@ -24,3 +24,14 @@ like hard to read some text, working on finding what colors are what.
 <img width="1905" height="1192" alt="Screenshot 2026-01-01 002223" src="https://github.com/user-attachments/assets/e887b0d3-2877-4505-9f28-3ec39c4f1e9b" />
 <img width="1269" height="1071" alt="Screenshot 2025-12-27 155240" src="https://github.com/user-attachments/assets/dca8c0ee-d7a8-4f48-873c-120ddc551de3" />
 <img width="1913" height="1221" alt="Screenshot 2026-01-01 011137" src="https://github.com/user-attachments/assets/3887bedb-102e-4e50-9772-ddedcd53c6f2" />
+
+
+
+
+___________________
+
+
+
+
+need  UnityModManager 
+https://github.com/newman55/unity-mod-manager/
